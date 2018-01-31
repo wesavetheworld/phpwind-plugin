@@ -1,0 +1,100 @@
+<!--<?php print <<<EOT
+-->
+<style >
+.line{margin:2px 1px 2px 13px;padding:0px;}
+</style>
+<div id="breadCrumb">
+		<img src="$imgpath/$stylepath/thread/home-old.gif" align="absmiddle" />&nbsp;<a href="$db_bfn" title="$db_bbsname">$db_bbsname</a>
+ &raquo; <a href="$basename">BBSCoin/积分兑换</a>
+</div>
+<div class="t">
+	<table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td class="h" colspan="2">功能简介</td></tr>
+        <tr class="tr3"><th>BBSCoin 支付，BBSCoin/积分兑换比例为 1：{$bbscoin_db['pay_ratio']}</th></tr>
+	</table>
+</div>
+<!--
+EOT;
+if(!$action){print <<<EOT
+-->
+<form method="post" autocomplete="off" action="$basename&">
+<input type="hidden" name="action" value="add" />
+<div class="t" style=" margin-left:1px; margin-right:1px;">
+<table width="100%" cellspacing="0" cellpadding="0" align="center">
+	<tr class="tr3">
+		<th>充值</th>
+		<td><input type="text" size="5" class="input" style="width: auto;" id="addfundamount" name="amount" value="0" onkeyup="addcalcredit()" />&nbsp;{$credit->cType[$bbscoin_db[pay_credit]]} 
+		&nbsp;所需 BBSCoin <span id="desamount">0</span> BBS</td>
+	</tr>
+	<tr class="tr3">
+		<th></th>
+		<td>
+		请先将BBSCoin打入下述钱包地址，然后将交易ID (TransactionHash) 填写后，再点击充值<br />{$bbscoin_db['bbscoin_wallet_address']}<br/>
+		</td>
+	</tr>
+	<tr class="tr3">
+		<th>交易ID</th>
+		<td>
+		<input type="text" size="100" class="input" style="width: auto;" id="transaction_hash" name="transaction_hash" value="" />
+		</td>
+	</tr>
+</table>
+<div class="tac" style="padding:1em;"><span class="btn"><span><button type="submit" id="buysubmit">我要充值</button></span></span></div>
+</div>
+</form>
+<!--
+EOT;
+if($bbscoin_db['pay_to_bbscoin']){print <<<EOT
+-->
+<div class="t">
+	<table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td class="h" colspan="2">功能简介</td></tr>
+        <tr class="tr3"><th>BBSCoin 提币，站点钱包内 BBSCoin 不够时可能会失败。交易手续费由您支付。积分/BBSCoin兑换比例为 1： {$bbscoin_db['pay_to_coin_ratio']}</th></tr>
+	</table>
+</div>
+	  <form method="post" autocomplete="off" action="$basename&">
+				<input type="hidden" name="action" value="pay_to_bbscoin" />
+<div class="t" style=" margin-left:1px; margin-right:1px;">
+<table width="100%" cellspacing="0" cellpadding="0" align="center">
+	<tr class="tr3">
+						<th>提币</th>
+						<td class="pns">
+							<input type="text" size="5" class="input" style="width: auto;" id="addcoinamount" name="amount" value="0" onkeyup="addcalcoin()" />
+							&nbsp;BBS
+							&nbsp;所需 <span id="coin_desamount">0</span> {$credit->cType[$bbscoin_db[pay_credit]]}
+						</td>
+					</tr>
+					<tr class="tr3">
+						<th>提现钱包地址</th>
+						<td>
+							<input type="text" size="100" class="input" style="width: auto;" id="walletaddress" name="walletaddress" value="" />
+						</td>
+					</tr>
+				</table>
+				<div class="tac" style="padding:1em;"><span class="btn"><span><button type="submit" id="buysubmit">我要提币</button></span></span></div></div>
+		</form>
+<!--
+EOT;
+}print <<<EOT
+-->
+<script type="text/javascript">
+function addcalcredit() {
+var addfundamount = getObj('addfundamount').value.replace(/^0/, '');
+var addfundamount = parseInt(addfundamount);
+getObj('desamount').innerHTML = !isNaN(addfundamount) ? Math.ceil(((addfundamount / {$bbscoin_db[pay_ratio]}) * 100)) / 100 : 0;
+}
+
+function addcalcoin() {
+var addcoinamount = getObj('addcoinamount').value.replace(/^0/, '');
+var addcoinamount = parseInt(addcoinamount);
+getObj('coin_desamount').innerHTML = !isNaN(addcoinamount) ? Math.ceil(((addcoinamount / {$bbscoin_db[pay_to_coin_ratio]}) * 100)) / 100 : 0;
+}
+
+</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+?>-->

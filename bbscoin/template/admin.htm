@@ -1,0 +1,122 @@
+<!--<?php
+include_once PrintEot('left');print <<<EOT
+-->
+<div class="mb10"><a href="$admin_file?adminjob=hackcenter">插件中心</a>&raquo; <a href="javascript:;">{$db_hackdb[bbscoin][0]}</a></div>
+<!--
+EOT;
+if(empty($action)){print <<<EOT
+-->
+<div class="nav3 mb10">
+      <ul class="cc">
+      <li class="current"><a href="$basename">参数设置</a></li>
+      <li><a href="$basename&action=log">日志管理</a></li>
+    </ul>
+</div>
+<div class="admin_info mb10">
+	<h3 class="h1">提示信息</h3>
+    <div class="legend">设置:可开启关闭功能</div>
+</div>
+<form action="$basename" method="post">
+<input type="hidden" name="step" value="2">
+<h2 class="h1">参数设置</h2>
+  <div class="admin_table mb10">
+  <table width="100%" cellspacing="0" cellpadding="0">
+    <tr class="tr1 vt">
+      <td class="td1">是否开启插件</td>
+      <td class="td2">
+      	<ul class="cc list_80 list_A">
+            <li><input type="radio" value="1" $ifopen_Y name="config[ifopen]" />开启</li>
+            <li><input type="radio" value="0" $ifopen_N name="config[ifopen]" />关闭</li>
+          </ul>
+          </td>
+		  <td class="td2"><div class="help_a">功能开启后，请到 运营工具 ->导航菜单管理 –>顶部底部导航 中设置此插件是否在前台显示</div></td>
+        </tr>
+    <tr class="tr1 vt">
+      <td class="td1">交易积分</td>
+      <td class="td2">        <select name="config[pay_credit]" >
+          $CreditList
+        </select></td>
+      <td class="td2"><div class="help_a"></div></td>
+    </tr>
+    <tr class="tr1 vt">
+      <td class="td1">BBSCoin/积分兑换比率</td>
+      <td class="td2"><input type="text" class="input input_wb" name="config[pay_ratio]" value="$bbscoin_db[pay_ratio]"></td>
+      <td class="td2"><div class="help_a"></div></td>
+    </tr>
+    <tr class="tr1 vt">
+      <td class="td1">是否允许积分换BBSCoin</td>
+      <td class="td2">
+      	<ul class="cc list_80 list_A">
+            <li><input type="radio" value="1" $pay_to_bbscoin_Y name="config[pay_to_bbscoin]" />开启</li>
+            <li><input type="radio" value="0" $pay_to_bbscoin_N name="config[pay_to_bbscoin]" />关闭</li>
+          </ul>
+          </td>
+		  <td class="td2"><div class="help_a"></div></td>
+        </tr>
+    <tr class="tr1 vt">
+      <td class="td1">积分/BBSCoin兑换比率</td>
+      <td class="td2"><input type="text" class="input input_wb" name="config[pay_to_coin_ratio]" value="$bbscoin_db[pay_to_coin_ratio]"></td>
+      <td class="td2"><div class="help_a"></div></td>
+    </tr>
+    <tr class="tr1 vt">
+      <td class="td1">站长钱包地址</td>
+      <td class="td2"><input type="text" class="input input_wb" name="config[bbscoin_wallet_address]" value="$bbscoin_db[bbscoin_wallet_address]"></td>
+      <td class="td2"><div class="help_a"></div></td>
+    </tr>
+    <tr class="tr1 vt">
+      <td class="td1">Walletd 服务地址</td>
+      <td class="td2"><input type="text" class="input input_wb" name="config[bbscoin_walletd]" value="$bbscoin_db[bbscoin_walletd]"></td>
+      <td class="td2"><div class="help_a"></div></td>
+    </tr>
+</table>
+  </div>
+  <div class="mb10 tac">
+    <span class="btn"><span><button type="submit">提 交</button></span></span>
+   </div>
+</form>
+<!--
+EOT;
+}elseif($action=='log'){print <<<EOT
+-->
+<div class="nav3 mb10">
+      <ul class="cc">
+      <li><a href="$basename">参数设置</a></li>
+      <li class="current"><a href="$basename&action=log">日志管理</a></li>
+    </ul>
+</div>
+<div class="admin_info mb10">
+	<h3 class="h1">提示信息</h3>
+    <div class="legend">日志：清晰地记录用户每一笔交易信息，方便查询</div>
+ </div>
+ <div class="cc mb10">$pages</div>
+  <h2  class="h1">操作日志</h2>
+  <div class="admin_table mb10">
+  <table width="100%" cellspacing="0" cellpadding="0">
+    <tr class="tr2">
+      <td>ID</td>
+      <td>交易ID</td>
+      <td>提现钱包地址</td>
+      <td>操作日期</td>
+    </tr>
+<!--
+EOT;
+foreach($logdb as $key => $value){
+print <<<EOT
+-->
+    <tr class="tr1 vt">
+      <td class="td2">$value[orderid]</td>
+      <td class="td2">$value[transaction_hash]</td>
+      <td class="td2">$value[address]</td>
+      <td class="td2">$value[date]</td>
+    </tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+  </table>
+  </div>
+<!--
+EOT;
+}include_once PrintEot('adminbottom');
+?>
+-->

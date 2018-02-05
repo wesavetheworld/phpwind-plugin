@@ -50,6 +50,23 @@ if (empty($action)) {
 	);
 	$result = getUrlContent($bbscoin_db['bbscoin_walletd'], json_encode($req_data)); 
 	$rsp_data = json_decode($result, true);
+
+    $status_req_data = array(
+      "jsonrpc" => "2.0",
+      "method" => "getStatus"
+    );
+
+    $result = getUrlContent($bbscoin_db['bbscoin_walletd'], json_encode($status_req_data)); 
+    $status_rsp_data = json_decode($result, true);
+
+    $blockCount = $status_rsp_data['result']['blockCount'];
+    $transactionBlockIndex = $rsp_data['result']['transaction']['blockIndex'];
+    $confirmed = $blockCount - $transactionBlockIndex + 1;
+    if ($blockCount <= 0 || $transactionBlockIndex <= 0 || $confirmed <= $bbscoin_db['confirmed_blocks']) {
+		procUnLock('pay_bbscoin_'.$winduid);
+		Showmsg('交易未达到所需确认数，请稍后再试。所需确认数为'.$bbscoin_db['confirmed_blocks']);
+    }
+
 	$trans_amount = 0;
 	if ($rsp_data['result']['transaction']['transfers']) {
 		foreach ($rsp_data['result']['transaction']['transfers'] as $transfer_item) {

@@ -7,5 +7,6 @@ $bbscoin_db=array(
 	'pay_to_coin_ratio' => '10',
 	'bbscoin_wallet_address' => 'fyTWc11uMRLHUgGCyDqiFmRk4fycMNtGZHEuJyi5AyVQKzTzCrUqCB2R9knJiUQxNBVe7Rwk1aCQ9fwQRfUp5exm1vLqUdtss',
 	'bbscoin_walletd' => 'http://127.0.0.1:8070/json_rpc',
+	'confirmed_blocks' => '3',
 );
 ?>

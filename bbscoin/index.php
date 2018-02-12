@@ -117,7 +117,7 @@ if (empty($action)) {
 		Showmsg('提现操作失败');
 	}
 
-	$real_price = $amount * 100000000 - 1000000;
+	$real_price = $amount * 100000000 - 50000000;
 
 	if ($real_price <= 0) {
 		Showmsg('扣除手续费后提现BBSCoin小于0，无法继续');
@@ -147,8 +147,8 @@ if (empty($action)) {
 
 	$req_data = array(
 		'params' => array(
-			'anonymity' => 0,
-			'fee' => 1000000,
+			'anonymity' => 5,
+			'fee' => 50000000,
 			'unlockTime' => 0,
 			'changeAddress' => $bbscoin_db['bbscoin_wallet_address'],
 			"transfers" => array(

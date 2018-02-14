@@ -41,23 +41,9 @@ if (empty($action)) {
 		'date'		=> $timestamp,
 		'state'		=> 0
 	)));
-	$req_data = array(
-			"params" => array(
-			"transactionHash" => $transaction_hash
-		),
-		"jsonrpc" => "2.0",
-		"method" => "getTransaction"
-	);
-	$result = getUrlContent($bbscoin_db['bbscoin_walletd'], json_encode($req_data)); 
-	$rsp_data = json_decode($result, true);
 
-    $status_req_data = array(
-      "jsonrpc" => "2.0",
-      "method" => "getStatus"
-    );
-
-    $result = getUrlContent($bbscoin_db['bbscoin_walletd'], json_encode($status_req_data)); 
-    $status_rsp_data = json_decode($result, true);
+    $rsp_data = BBSCoinApi::getTransaction($bbscoin_db['bbscoin_walletd'], $transaction_hash);
+    $status_rsp_data = BBSCoinApi::getStatus($bbscoin_db['bbscoin_walletd']);
 
     $blockCount = $status_rsp_data['result']['blockCount'];
     $transactionBlockIndex = $rsp_data['result']['transaction']['blockIndex'];
@@ -145,25 +131,7 @@ if (empty($action)) {
 		'state'		=> 0
 	)));
 
-	$req_data = array(
-		'params' => array(
-			'anonymity' => 5,
-			'fee' => 50000000,
-			'unlockTime' => 0,
-			'changeAddress' => $bbscoin_db['bbscoin_wallet_address'],
-			"transfers" => array(
-				0 => array(
-				'amount' => $real_price,
-				'address' => $walletaddress,
-				)
-			)
-		),
-		"jsonrpc" => "2.0",
-		"method" => "sendTransaction"
-	);
-
-	$result = getUrlContent($bbscoin_db['bbscoin_walletd'], json_encode($req_data)); 
-	$rsp_data = json_decode($result, true);
+	$rsp_data = BBSCoinApi::sendTransaction($bbscoin_db['bbscoin_walletd'], $bbscoin_db['bbscoin_wallet_address'], $real_price, $walletaddress);
 
 	$trans_amount = 0;
 	if ($rsp_data['result']['transactionHash']) {
@@ -195,18 +163,72 @@ if (empty($action)) {
 	}
 
 }
-function getUrlContent($url, $data_string) {
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_USERAGENT, 'BBSCoin');
-	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	$data = curl_exec($ch);
-	$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	curl_close($ch);
-	return $data;
+
+class BBSCoinApi {
+
+    public static function getUrlContent($url, $data_string) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'BBSCoin');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $data = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return $data;
+    }
+
+    public static function sendTransaction($walletd, $address, $real_price, $sendto) {
+        $req_data = array(
+          'params' => array(
+              'anonymity' => 5,
+              'fee' => 50000000,
+              'unlockTime' => 0,
+              'changeAddress' => $address,
+              "transfers" => array(
+               0 => array(
+                    'amount' => $real_price,
+                    'address' => $sendto,
+                )
+              )
+          ),
+          "jsonrpc" => "2.0",
+          "method" => "sendTransaction"
+        );
+
+        $result = self::getUrlContent($walletd, json_encode($req_data)); 
+        $rsp_data = json_decode($result, true);
+        
+        return $rsp_data;
+    }
+
+    public static function getStatus($walletd) {
+        $status_req_data = array(
+          "jsonrpc" => "2.0",
+          "method" => "getStatus"
+        );
+
+        $result = self::getUrlContent($walletd, json_encode($status_req_data)); 
+        $status_rsp_data = json_decode($result, true);
+        return $status_rsp_data;
+    }
+
+    public static function getTransaction($walletd, $transaction_hash) {
+        $req_data = array(
+          "params" => array(
+          	"transactionHash" => $transaction_hash
+          ),
+          "jsonrpc" => "2.0",
+          "method" => "getTransaction"
+        );
+
+        $result = self::getUrlContent($walletd, json_encode($req_data)); 
+        $rsp_data = json_decode($result, true);
+
+        return $rsp_data;
+    }
+
 }
-?>

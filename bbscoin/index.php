@@ -10,6 +10,10 @@ if (!$bbscoin_db['bbscoin_wallet_address']) {
 require_once(R_P.'require/credit.php');
 InitGP(array('action'));
 
+if ($bbscoin_db['bbscoin_siteid'] && $bbscoin_db['bbscoin_sitekey']) {
+    BBSCoinApi::setSiteInfo($bbscoin_db['bbscoin_siteid'], $bbscoin_db['bbscoin_sitekey']);
+}
+
 if (empty($action)) {
 	require_once PrintHack('index');footer();
 } elseif ($action == 'add') {
@@ -166,8 +170,29 @@ if (empty($action)) {
 
 class BBSCoinApi {
 
+    private static $online_api_site_id  = '';
+    private static $online_api_site_key = '';
+
+    // Set Site Info
+    public static function setSiteInfo($site_id, $site_key) {
+        self::$online_api_site_id = $site_id;
+        self::$online_api_site_key = $site_key;
+    }
+
+    // Send Request
     public static function getUrlContent($url, $data_string) {
         $ch = curl_init();
+
+        if (self::$online_api_site_id && self::$online_api_site_key) {
+            $sign = self::sign($data_string);
+            $url_suff = 'site_id='.self::$online_api_site_id.'&sign='.$sign['sign'].'&ts='.$sign['ts'];
+            if (strpos($url, '?') === false) {
+                $url .= '?'.$url_suff;
+            } else {
+                $url .= '&'.$url_suff;
+            }
+        }
+
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_USERAGENT, 'BBSCoin');
         curl_setopt($ch, CURLOPT_POST, true);
@@ -181,6 +206,17 @@ class BBSCoinApi {
         return $data;
     }
 
+    // Generate Sign
+    public static function sign($data_string) {
+        $ts = time();
+        $sign = hash_hmac('sha256', $data_string.$ts, self::$online_api_site_key);
+        return array(
+            'sign' => $sign,
+            'ts' => $ts
+        );
+    }
+
+    // Send Transaction
     public static function sendTransaction($walletd, $address, $real_price, $sendto) {
         $req_data = array(
           'params' => array(
@@ -205,6 +241,7 @@ class BBSCoinApi {
         return $rsp_data;
     }
 
+    // Get Status
     public static function getStatus($walletd) {
         $status_req_data = array(
           "jsonrpc" => "2.0",
@@ -216,6 +253,7 @@ class BBSCoinApi {
         return $status_rsp_data;
     }
 
+    // Get Transaction
     public static function getTransaction($walletd, $transaction_hash) {
         $req_data = array(
           "params" => array(
@@ -232,3 +270,4 @@ class BBSCoinApi {
     }
 
 }
+
